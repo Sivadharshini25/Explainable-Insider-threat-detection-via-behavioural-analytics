@@ -179,16 +179,10 @@ Flagged behaviour should be investigated in context. The system must not be used
 
 ## Acknowledgements
 
-This project uses the CERT Insider Threat Dataset r4.2 for insider-threat research and experimentation.
+This project uses the CERT Insider Threat Dataset r4.2 (CMU) for insider-threat research and experimentation.
 
 Refer to the dataset's official documentation and applicable terms for attribution and usage requirements.
 
-## Author
 
-**[Your Name]**
-
-GitHub: [Your GitHub Profile URL](https://github.com/)
-
----
 
 *Built as a machine learning and explainable AI project for behavioural risk analysis and insider-threat investigation.*
