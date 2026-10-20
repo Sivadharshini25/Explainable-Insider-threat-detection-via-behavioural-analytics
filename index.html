@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Insider Threat Intelligence</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand-name">Insider Threat Intelligence</div>
+      <div class="brand-subtitle">Security Operations &amp; Investigation</div>
+    </div>
+    <nav class="main-nav" aria-label="Primary navigation">
+      <a href="#overview" class="nav-link active">Overview</a>
+      <a href="#threat-analytics" class="nav-link">Threat Analytics</a>
+      <a href="#case-queue" class="nav-link">Case Queue</a>
+      <a href="#investigations" class="nav-link">Investigations</a>
+    </nav>
+    <div class="status-pill"><span class="dot"></span><span id="status-text">Loading dataset…</span></div>
+  </header>
+
+  <main class="page-shell">
+    <section id="overview" class="panel section-block">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">INVESTIGATION STATUS</p>
+          <h1>Overview</h1>
+        </div>
+      </div>
+      <div class="summary-note">
+        Model predictions indicate potential risk and require human validation. A flagged case does not establish malicious intent.
+      </div>
+      <div id="overview-metrics" class="metrics-grid"></div>
+    </section>
+
+    <section id="threat-analytics" class="panel section-block">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">THREAT ANALYTICS</p>
+          <h2>Risk distribution &amp; trends</h2>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <article class="chart-card">
+          <div class="card-head"><h3>Risk distribution</h3><span class="card-tag">High ≥ 0.90 • Critical ≥ 0.99</span></div>
+          <div id="risk-distribution" class="chart-block"></div>
+        </article>
+        <article class="chart-card">
+          <div class="card-head"><h3>Threat probability distribution</h3><span class="card-tag">Model probability</span></div>
+          <div id="probability-distribution" class="chart-block"></div>
+        </article>
+        <article class="chart-card wide">
+          <div class="card-head"><h3>Temporal threat trend</h3><span class="card-tag">Flagged cases by date</span></div>
+          <div id="temporal-trend" class="chart-block trend-block"></div>
+        </article>
+        <article class="chart-card wide">
+          <div class="card-head"><h3>Top contributing risk indicators</h3><span class="card-tag">SHAP feature contribution</span></div>
+          <div id="top-indicators" class="indicator-list-block"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="case-queue" class="panel section-block">
+      <div class="section-head queue-head">
+        <div>
+          <p class="eyebrow">CASE QUEUE</p>
+          <h2>Flagged cases</h2>
+        </div>
+        <div class="queue-controls">
+          <input id="search" type="search" placeholder="Search case ID or user" aria-label="Search flagged cases" />
+          <select id="risk-filter" aria-label="Filter by risk category">
+            <option value="all">All risk levels</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Elevated">Elevated</option>
+            <option value="Moderate">Moderate</option>
+          </select>
+          <input id="date-from" type="date" aria-label="Start date" />
+          <input id="date-to" type="date" aria-label="End date" />
+          <select id="sort-order" aria-label="Sort flagged cases">
+            <option value="probability-desc">Sort: probability ↓</option>
+            <option value="probability-asc">Sort: probability ↑</option>
+            <option value="date-desc">Sort: date ↓</option>
+            <option value="date-asc">Sort: date ↑</option>
+            <option value="user-asc">Sort: user A–Z</option>
+          </select>
+          <button id="clear-filters" class="ghost-button" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="queue-meta"><span id="queue-result-count">0 results</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Case</th>
+              <th>User</th>
+              <th>Alert date</th>
+              <th>Probability</th>
+              <th>Risk</th>
+              <th>Indicator</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody id="threat-rows"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <section id="investigations" class="panel section-block">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">INVESTIGATION</p>
+          <h2>Case review</h2>
+        </div>
+        <button id="back-to-queue" class="ghost-button" type="button">Back to queue</button>
+      </div>
+
+      <div id="case-empty" class="empty-state hidden">
+        Select a case from the queue to review its evidence and explainability.
+      </div>
+
+      <div id="case-detail" class="case-view hidden">
+        <div class="case-header">
+          <div>
+            <p class="eyebrow">INVESTIGATION CASE <span id="case-id"></span></p>
+            <h3 id="case-subject"></h3>
+            <div id="case-date" class="muted"></div>
+          </div>
+          <div class="case-header-meta">
+            <div id="risk-tag" class="risk-badge"></div>
+            <div id="confidence" class="confidence-score"></div>
+          </div>
+        </div>
+
+        <div id="metrics" class="metrics-strip"></div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" type="button" data-tab="overview">Overview</button>
+          <button class="tab" type="button" data-tab="evidence">Evidence</button>
+          <button class="tab" type="button" data-tab="explainability">SHAP &amp; deviations</button>
+        </div>
+
+        <div id="tab-overview" class="tab-panel"></div>
+        <div id="tab-evidence" class="tab-panel hidden"></div>
+        <div id="tab-explainability" class="tab-panel hidden"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
